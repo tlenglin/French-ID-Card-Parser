@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 import imutils
 import cv2
+from PIL import Image
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -27,7 +28,8 @@ sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (21, 30))
 #     blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKernel)
 
 
-image = Image.open("step1.jpg")
+#image = Image.open("step1.jpg")
+image = cv2.imread("./step1.jpg")
 image = imutils.resize(image, height=600)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray = cv2.GaussianBlur(gray, (3, 3), 0)
@@ -92,4 +94,5 @@ for c in cnts:
 
 
 #save MRZ images
-roi.save("step2.jpg")
+#roi.save("step2.jpg")
+cv2.imwrite("step2.jpg", roi)
