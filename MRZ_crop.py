@@ -78,7 +78,7 @@ for c in cnts:
  
     # check to see if the aspect ratio and coverage width are within
     # acceptable criteria
-    if ar > 5 and crWidth > 0.75:
+    if ar > 3 and crWidth > 0.15:
         # pad the bounding box since we applied erosions and now need
         # to re-grow it
         pX = int((x + w) * 0.03)
