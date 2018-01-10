@@ -48,5 +48,5 @@ rotation = argmax(r)
 print('Rotation: {:.2f} degrees'.format(90 - rotation))
 
 img2 = img.rotate(90 - rotation, expand=True)
-img2.convert('L').save("step1.jpg") #save a grayscale version of the image ?
-#save it in a "rotated_images" diectory ?
+img2.convert('L').save("./step1.jpg") #save a grayscale version of the image ?
+#save it in a "rotated_images" directory ?
