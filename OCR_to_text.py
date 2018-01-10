@@ -35,9 +35,9 @@ def line_fixer(line1, line2):
     line2 = line2.upper()
     for i in range(len(line1)):
         if i < 31 and letters.get(line1[i]) != None:
-            line1[i] = letters[line1[i]]
+            line1 = line1[:31].replace(line1[i], letters[line1[i]]) + line1[31:]
         elif i > 30 and numbers.get(line1[i]) != None:
-            line1[i] = numbers[line1[i]]
+            line1 = line1[:31] + line1[31:].replace(line1[i], letters[line1[i]])
 
     for i in range(len(line2)):
         if ((i > 12 and i < 27)) and letters.get(line2[i]) != None:
