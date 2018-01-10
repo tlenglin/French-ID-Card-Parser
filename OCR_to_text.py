@@ -40,10 +40,10 @@ def line_fixer(line1, line2):
             line1[i] = numbers[line1[i]]
 
     for i in range(len(line2)):
-        if ((i > 12 and i < 27) or i == 34) and letters.get(line2[i]) != None:
-            line2[i] = letters[line2[i]]
-        elif (i < 13 or (i > 26 and i < 34) or i == 35) and numbers.get(line2[i]) != None:
-            line2[i] = numbers[line2[i]]
+        if ((i > 12 and i < 27)) and letters.get(line2[i]) != None:
+            line2 = line2[:13] + line2[13:27].replace(line2[i], letters[line2[i]]) + line2[27:]
+        elif (i < 13 or (i > 26 and i < 34)) and numbers.get(line2[i]) != None:
+            line2 = line2[:13].replace(line2[i], numbers[line2[i]]) + line2[13:27] + line2[27:34].replace(line2[i], numbers[line2[i]]) + line2[34:]
     return line1 + line2
 
 def fill_file(mrz, filename):
