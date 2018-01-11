@@ -33,12 +33,12 @@ numbers = {'B': '8', 'C': '0', 'D': '0', 'G': '6', 'I': '1', 'O': '0', 'Q': '0',
 def line_fixer(line1, line2):
     line1 = line1.upper()
     line2 = line2.upper()
-    for i in range(len(line1)):
-        if i < 31 and letters.get(line1[i]) != None:
-            line1 = line1[:31].replace(line1[i], letters[line1[i]]) + line1[31:]
-        elif i > 30 and numbers.get(line1[i]) != None:
-            line1 = line1[:31] + line1[31:].replace(line1[i], letters[line1[i]])
 
+    for i in range(len(line1)):
+        if i < 30 and letters.get(line1[i]) != None:
+            line1 = line1[:30].replace(line1[i], letters[line1[i]]) + line1[30:]
+        elif i > 29 and numbers.get(line1[i]) != None:
+            line1 = line1[:30] + line1[30:].replace(line1[i], numbers[line1[i]])
     for i in range(len(line2)):
         if ((i > 12 and i < 27)) and letters.get(line2[i]) != None:
             line2 = line2[:13] + line2[13:27].replace(line2[i], letters[line2[i]]) + line2[27:]
