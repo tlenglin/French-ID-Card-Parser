@@ -95,4 +95,5 @@ for c in cnts:
 
 #save MRZ images
 #roi.save("step2.jpg")
+roi = cv2.threshold(roi, 82, 255, cv2.THRESH_BINARY)[1]
 cv2.imwrite("step2.jpg", roi)
