@@ -8,8 +8,10 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--images", required=True, help="path to images directory")
 args = vars(ap.parse_args())
 
-os.system('/Users/tlenglin/.brew/Cellar/tesseract/3.05.01/bin/tesseract ./step2.jpg step3')
+os.system('/Users/tlenglin/.brew/Cellar/tesseract/3.05.01/bin/tesseract ./step2.jpg step3' )
 time.sleep(2)
+
+
 #def revert_file():
     
 
@@ -25,6 +27,23 @@ time.sleep(2)
 #         return 1
 #     else:
 #         return 0
+
+def choose_line(lines):
+    i = 0
+    res = 0
+    j = 0
+    while i < range(len(lines)) - 1:
+        if len(lines[str(i)]) + len(lines[str(i + 1)]) > res
+            res = len(lines[str(i)]) + len(lines[str(i + 1)])
+            j = i
+    lines["1"] = lines[str(j)])
+    lines["2"] = lines[str(j + 1)])
+    return lines
+        
+
+def delete_spaces(line):
+    line = line.replace(" ", "")
+    return line
 
 #fixers
 letters = {'0': 'O', '1': 'I', '2': 'Z', '4': 'A', '5': 'S', '6': 'G', '8': 'B' }
@@ -52,9 +71,12 @@ def fill_file(mrz, filename):
     file.close()
 
 def empty_line(line): #si ligne pas complete, ou trop longue ? 
+    line = line.replace(" ", "")
     for i in range(len(line)):
         if line[i] != " ":
             return 0
+    if len(line) < 15:
+        return 0
     return 1
 
 def reversed_line(line):
@@ -63,9 +85,10 @@ def reversed_line(line):
             return 0
     return 1
 
-file = open("step3.txt", "r")
 
-cleaned_MRZ = ''
+
+
+file = open("step3.txt", "r")
 
 i = 0
 lines = {}
@@ -76,7 +99,11 @@ for line in file:
             #revert_file()
             print "error : file reverted"
             sys.exit
+        line = delete_spaces(line)
         lines[str(i)] = line
+if (i > 2):
+    lines = choose_line(lines)
+
 cleaned_MRZ = line_fixer(lines["1"], lines["2"])
 
 fill_file(cleaned_MRZ, "step4.txt")
