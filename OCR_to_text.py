@@ -1,12 +1,7 @@
-import argparse
 import imutils
 import os
 import time
 
-# construct the argument parse and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--images", required=True, help="path to images directory")
-args = vars(ap.parse_args())
 
 os.system('/Users/tlenglin/.brew/Cellar/tesseract/3.05.01/bin/tesseract ./step2.jpg step3' )
 time.sleep(2)
@@ -33,11 +28,11 @@ def choose_line(lines):
     res = 0
     j = 0
     while i < range(len(lines)) - 1:
-        if len(lines[str(i)]) + len(lines[str(i + 1)]) > res
+        if (len(lines[str(i)]) + len(lines[str(i + 1)])) > res:
             res = len(lines[str(i)]) + len(lines[str(i + 1)])
             j = i
-    lines["1"] = lines[str(j)])
-    lines["2"] = lines[str(j + 1)])
+    lines["1"] = lines[str(j)]
+    lines["2"] = lines[str(j + 1)]
     return lines
         
 
@@ -86,6 +81,11 @@ def reversed_line(line):
     return 1
 
 
+#def aligned_lines(mrz):
+
+
+#def align_lines(mrz):
+
 
 
 file = open("step3.txt", "r")
@@ -105,6 +105,13 @@ if (i > 2):
     lines = choose_line(lines)
 
 cleaned_MRZ = line_fixer(lines["1"], lines["2"])
+
+# if aligned_lines(cleaned_MRZ) == 0:
+#     cleaned_MRZ = align_lines(cleaned_MRZ)
+#     if aligned_lines(cleaned_MRZ) == 0:
+#         #change threshold
+#         print "error : change threshold"
+#         sys.exit()
 
 fill_file(cleaned_MRZ, "step4.txt")
 
