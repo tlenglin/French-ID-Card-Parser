@@ -22,3 +22,8 @@ if args["step"] != None:
         module = import_list[steps[i]]
         command = __import__(module)
         command.run()
+else:
+    import rotation_spacing
+    import MRZ_crop
+    import OCR_to_text
+    import MRZ_parsing
