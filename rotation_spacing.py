@@ -15,7 +15,6 @@ import numpy
 from numpy.fft import rfft
 import matplotlib.pyplot as plt
 from matplotlib.mlab import rms_flat
-import argparse
 from imutils import paths
 try:
     # More accurate peak finding from
@@ -27,11 +26,8 @@ try:
 except ImportError:
     from numpy import argmax
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--images", required=True, help="path to the image")
-args = vars(ap.parse_args())
 
-filename = args["images"]
+filename = "step0.jpg"
 img = Image.open(filename)
 
 # Load file, converting to grayscale
