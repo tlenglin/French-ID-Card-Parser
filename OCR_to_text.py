@@ -1,6 +1,7 @@
 import imutils
 import os
 import time
+import re
 
 
 #def revert_file():
@@ -105,11 +106,11 @@ def align_line1(aligned_MRZ, line1):
                 break
             i = i + 1
             i1_beg = i1_beg + 1
-    if ((i1_end = check_begining_line1(line1)) != -1):
-        i = 0
+    if ((i1_end = check_end_line1(line1)) != -1):
+        i = len(aligned_MRZ)
         i1_end = i1_end + 6 #si on sort de la chaine ?
         while (i1_end >= 0 and i >= 0):
-            if score1(aligned_MRZ[:i] + line1[i1_end] + align_line1[i + 1:]) >= score1(aligned_MRZ):
+            if score1(aligned_MRZ[:i] + line1[i1_end] + align_line1[i + 1:]) >= score1(aligned_MRZ): #atenttion premiere somme avec i = len
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_end] + align_line1[i + 1:]
             else:
                 break
@@ -117,9 +118,45 @@ def align_line1(aligned_MRZ, line1):
             i1_end = i1_end - 1
     return aligned_MRZ
 
+def check_begining_line2(line2):
+    i = 0
+    while (re.findall('[A-Z]{2}|$', line2[i:i+2])[0] == '' and i < (len(line2) - 1)):
+        i = i + 1
+    if i == len(line2) - 1:
+        index = -1
+    else:
+        index = i
+    return index
+
+def check_end_line2(line2):
+    if re.findall('(\d+(M|F)\d+$)|$', line2)[0] == '':
+        index = -1
+    else:
+        index = re.finditer('(\d+(M|F)\d+$)|$', line2)
+    return index
 
 def align_line2(aligned_MRZ, line2):
-    
+    if ((i2_beg = check_begining_line2(line2)) != -1):
+        i = 0
+        i2_beg = i2_beg - 13 # si on sort de la chaine ?
+        while (i2_beg < len(line2) and i < len(aligned_MRZ)):
+            if score2(aligned_MRZ[:i] + line2[i2_beg] + align_line2[i + 1:]) >= score2(aligned_MRZ):
+                aligned_MRZ = aligned_MRZ[:i] + line2[i2_beg] + align_line2[i + 1:]
+            else:
+                break
+            i = i + 1
+            i2_beg = i2_beg + 1
+    if ((i2_end = check_end_line2(line2)) != -1):
+        i = len(aligned_MRZ)
+        i2_end = i2_end + 1 #si on sort de la chaine ?
+        while (i2_end >= 0 and i >= 0):
+            if score2(aligned_MRZ[:i] + line2[i2_end] + align_line2[i + 1:]) >= score2(aligned_MRZ): #atenttion premiere somme avec i = len
+                aligned_MRZ = aligned_MRZ[:i] + line2[i2_end] + align_line2[i + 1:]
+            else:
+                break
+            i = i - 1
+            i2_end = i2_end - 1
+    return aligned_MRZ
 
 
 def align_lines(aligned_MRZ, line1, line2):
