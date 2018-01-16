@@ -165,19 +165,25 @@ def align_lines(aligned_MRZ, line1, line2):
     return aligned_MRZ
 
 def check_char(index, X, line, pos, neg):
-    if line[index] == X:
+    if line[index] == "x":
+        return 0
+    elif line[index] == X:
         return pos
     else:
         return neg
 
 def check_letters(index, line, pos, neg):
-    if re.findall('[A-Z]|<|$', line[index]) != '':
+    if line[index] == "x":
+        return 0
+    elif re.findall('[A-Z]|<|$', line[index]) != '':
         return pos
     else:
         return neg
 
 def check_digits(index, line, pos, neg):
-    if re.findall('[0-9]|$', line[index]) != '':
+    if line[index] == "x":
+        return 0
+    elif re.findall('[0-9]|$', line[index]) != '':
         return pos
     else:
         return neg
@@ -195,7 +201,7 @@ def score1(line1):
         else:
             s = s + check_digits(i, line1, 1, -1)
         i = i + 1
-    return s
+    return s * 100 / 45
 
 def score2(line2):
     i = 0
@@ -211,11 +217,11 @@ def score2(line2):
             else:
                 s = s + 5
         i = i + 1
-    return s
+    return s * 100 / 40
     
 
 def score(line1, line2):
-    return score1(line1) + score2(line2)
+    return (score1(line1) + score2(line2)) / 2
 
 def ocr():
     os.system('/Users/tlenglin/.brew/Cellar/tesseract/3.05.01/bin/tesseract ./step2.jpg step3' )
