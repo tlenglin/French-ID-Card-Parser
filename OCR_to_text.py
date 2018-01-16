@@ -164,9 +164,58 @@ def align_lines(aligned_MRZ, line1, line2):
     aligned_MRZ[1] = align_line1(aligned_MRZ[0], line2)
     return aligned_MRZ
 
+def check_char(index, X, line, pos, neg):
+    if line[index] == X:
+        return pos
+    else:
+        return neg
+
+def check_letters(index, line, pos, neg):
+    if re.findall('[A-Z]|<|$', line[index]) != '':
+        return pos
+    else:
+        return neg
+
+def check_digits(index, line, pos, neg):
+    if re.findall('[0-9]|$', line[index]) != '':
+        return pos
+    else:
+        return neg
+
+def score1(line1):
+    s = check_char(0, "I", line1, 1, -1)
+    s = s + check_char(1, "D", line1, 2, -2)
+    s = s + check_char(2, "F", line1, 3, -3)
+    s = s + check_char(3, "R", line1, 4, -4)
+    s = s + check_char(4, "A", line1, 5, -5)
+    i = 5
+    while (i < 36):
+        if (i < 30):
+            s = s + check_letters(i, line1, 1, -1)
+        else:
+            s = s + check_digits(i, line1, 1, -1)
+        i = i + 1
+    return s
+
+def score2(line2):
+    i = 0
+    s = 0
+    while (i < 36):
+        if (i < 13 or (i > 26 and i < 34) or i == 35):
+            s = s + check_digits(i, line2, 1, -1)
+        elif (i > 12 and i < 27):
+            s = s + check_letters(i, line2, 1, -1)
+        else:
+            if check_char(34, "M", line2, 5, -5) == -5 and check_char(34, "F", line2, 5, -5) == -5:
+                s = s - 5
+            else:
+                s = s + 5
+        i = i + 1
+    return s
+    
+
 def score(line1, line2):
-
-
+    return score1(line1) + score2(line2)
 
 def ocr():
     os.system('/Users/tlenglin/.brew/Cellar/tesseract/3.05.01/bin/tesseract ./step2.jpg step3' )
