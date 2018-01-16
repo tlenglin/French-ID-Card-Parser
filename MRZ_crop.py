@@ -10,6 +10,8 @@ def finishing_threshold(roi, th):
     return img
 
 def MRZ_crop(th):
+    print "starting MRZ_crop(", th, ")"
+
     image = cv2.imread("./step1.jpg")
     image = imutils.resize(image, height=600)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -59,6 +61,7 @@ def MRZ_crop(th):
 
 
     roi = finishing_threshold(roi, 125)
+    print "creation of step2.jpg"
     cv2.imwrite("step2.jpg", roi)
 
 rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (13, 5))

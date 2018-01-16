@@ -24,6 +24,8 @@ try:
 except ImportError:
     from numpy import argmax
 
+print("starting rotation_spacing")
+print("creation of step0.jpg")
 
 filename = "step0.jpg"
 img = Image.open(filename)
@@ -38,4 +40,5 @@ rotation = argmax(r)
 print('Rotation: {:.2f} degrees'.format(90 - rotation))
 
 img2 = img.rotate(90 - rotation, expand=True)
+print ("creation of step1.jpg")
 img2.convert('L').save("./step1.jpg")
