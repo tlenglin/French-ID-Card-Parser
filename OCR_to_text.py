@@ -10,13 +10,13 @@ def choose_line(lines):
     i = 1
     res = 0
     j = 1
-    print len(lines)
+    #print len(lines)
     while i < len(lines) - 1:
         if (len(lines[str(i)]) + len(lines[str(i + 1)])) > res:
             res = len(lines[str(i)]) + len(lines[str(i + 1)])
             j = i
         i = i + 1
-        print i
+        #print i
     lines["1"] = lines[str(j)]
     lines["2"] = lines[str(j + 1)]
     return lines
@@ -49,7 +49,8 @@ def line_fixer(line1, line2):
 
 def fill_file(mrz, filename):
     file = open(filename, "w")
-    file.write(mrz)
+    file.write(mrz[0])
+    file.write(mrz[1])
     file.close()
 
 def empty_line(line): #si ligne pas complete, ou trop longue ? 
@@ -92,7 +93,7 @@ def check_end_line1(line1):
 
 def score1(line1):
     print("starting score1")
-    print line1
+    #print line1
     s = check_char(0, "I", line1, 1, -1)
     s = s + check_char(1, "D", line1, 2, -2)
     s = s + check_char(2, "F", line1, 3, -3)
@@ -108,6 +109,7 @@ def score1(line1):
     return s * 100 / 45
 
 def score2(line2):
+    print("starting score2")
     i = 0
     s = 0
     while (i < 36):
@@ -130,8 +132,8 @@ def align_line1(aligned_MRZ, line1):
     if (i1_beg != -1):
         i = 0
         while (i1_beg < len(line1) and i < len(aligned_MRZ)):
-            if score1(aligned_MRZ[:i] + line1[i1_beg] + align_line1[i + 1:]) >= score1(aligned_MRZ):
-                aligned_MRZ = aligned_MRZ[:i] + line1[i1_beg] + align_line1[i + 1:]
+            if score1(aligned_MRZ[:i] + line1[i1_beg] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
+                aligned_MRZ = aligned_MRZ[:i] + line1[i1_beg] + aligned_MRZ[i + 1:]
             else:
                 break
             i = i + 1
@@ -139,32 +141,33 @@ def align_line1(aligned_MRZ, line1):
     if (i1_end != -1):
         i = len(aligned_MRZ) - 1 # -1  sur ? et i1_end aussi -1 ?
         i1_end = i1_end + 6 #si on sort de la chaine ?
-        print "i = ", i
-        print "i1_end = ", i1_end
-        print "line1[end] = ", line1[i1_end]
-        print "test"
+        if i1_end >= len(line1):
+            i1_end = len(line1) - 1
+        # print "i = ", i
+        # print "i1_end = ", i1_end
+        # print "line1[end] = ", line1[i1_end]
+        # print "test"
         while (i1_end >= 0 and i >= 0):
-            print("ON EST DANS LA BOUCLE")
-            print i
-            print i1_end
-            print aligned_MRZ[:i]
-            print line1[i1_end]
-            print len(aligned_MRZ)
-            print aligned_MRZ[i]
-            if i != 35:
-                print aligned_MRZ[i + 1:]
+            # print("ON EST DANS LA BOUCLE")
+            # print i
+            # print i1_end
+            # print aligned_MRZ[:i]
+            # print len(line1)
+            # print line1[i1_end]
+            # print len(aligned_MRZ)
+            # print aligned_MRZ[i]
             if ((i == len(aligned_MRZ) - 1) and (score1(aligned_MRZ[:i] + line1[i1_end]) >= score1(aligned_MRZ))): #atenttion premiere somme avec i = len
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_end]
-                print "on est dans le premier if"
+                #print "on est dans le premier if"
             elif score1(aligned_MRZ[:i] + line1[i1_end] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_end] + aligned_MRZ[i + 1:]
-                print "on est dans le if"
+                #print "on est dans le if"
             else:
-                print "on est dans le break"
+                #print "on est dans le break"
                 break
             i = i - 1
             i1_end = i1_end - 1
-        print "sortie de while"
+        #print "sortie de while"
     return aligned_MRZ
 
 def check_begining_line2(line2):
@@ -278,32 +281,34 @@ aligned_MRZ = align_lines(aligned_MRZ, cleaned_MRZ[0], cleaned_MRZ[1])
 s0 = score(aligned_MRZ[0], aligned_MRZ[1])
 print "s0 = ", s0
 
-if s0 < 80:
+if s0 < 90:
     print "s0 < 80"
-    MRZ_crop.MRZ_crop(90)
+    from MRZ_crop import MRZ_crop
+    MRZ_crop(90)
     new_MRZ = ocr()
+    print "passage du 2eme ocr()"
     aligned_MRZ = align_lines(aligned_MRZ, new_MRZ[0], new_MRZ[1])
-    MRZ_crop.MRZ_crop(160)
+    MRZ_crop(160)
     new_MRZ = ocr()
+    print "passage du 3eme ocr"
     aligned_MRZ = align_lines(aligned_MRZ, new_MRZ[0], new_MRZ[1])
     s1 = score(aligned_MRZ[0], aligned_MRZ[1])
     print "s1 = ", s1
-    if s1 < 80:
+    if s1 < 90:
         print "s1 < 80"
-        MRZ_crop.MRZ_crop(60)
+        MRZ_crop(60)
         new_MRZ = ocr()
         aligned_MRZ = align_lines(aligned_MRZ, new_MRZ[0], new_MRZ[1])
-        MRZ_crop.MRZ_crop(190)
+        MRZ_crop(190)
         new_MRZ = ocr()
         aligned_MRZ = align_lines(aligned_MRZ, new_MRZ[0], new_MRZ[1])
         s2 = score(aligned_MRZ[0], aligned_MRZ[1])
         print "s2 = ", s2
-        if s2 < 80:
+        if s2 < 90:
             if s2 > 50:
                 print "uncertain result, 50 < s2 < 80"
             else:
-                print "no result result s2 < 50"
-                sys.exit()
+                print "probably no result s2 < 50"
 
-
-fill_file(cleaned_MRZ, "step4.txt")
+print ("creation of step4.txt")
+fill_file(aligned_MRZ, "step4.txt")
