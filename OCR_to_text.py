@@ -50,6 +50,7 @@ def line_fixer(line1, line2):
 def fill_file(mrz, filename):
     file = open(filename, "w")
     file.write(mrz[0])
+    file.write("\n")
     file.write(mrz[1])
     file.close()
 
@@ -89,6 +90,24 @@ def check_end_line1(line1):
         index = i
     else :
         index = -1
+    return index
+
+def check_begining_line2(line2):
+    i = 0
+    while (re.findall('[A-Z]{2}|$', line2[i:i+2])[0] == '' and i < (len(line2) - 1)):
+        i = i + 1
+    if i == len(line2) - 1:
+        index = -1
+    else:
+        index = i
+    return index
+
+def check_end_line2(line2):
+    if re.findall('(\d+(M|F)\d+$)|$', line2)[0] == '':
+        index = -1
+    else:
+        index = re.finditer('(\d+(M|F)\d+$)|$', line2)
+        print index
     return index
 
 def score1(line1):
@@ -142,7 +161,9 @@ def align_line1(aligned_MRZ, line1):
         i = len(aligned_MRZ) - 1 # -1  sur ? et i1_end aussi -1 ?
         i1_end = i1_end + 6 #si on sort de la chaine ?
         if i1_end >= len(line1):
+            i = 36 - (i1_end - len(line1))
             i1_end = len(line1) - 1
+            
         # print "i = ", i
         # print "i1_end = ", i1_end
         # print "line1[end] = ", line1[i1_end]
@@ -170,29 +191,16 @@ def align_line1(aligned_MRZ, line1):
         #print "sortie de while"
     return aligned_MRZ
 
-def check_begining_line2(line2):
-    i = 0
-    while (re.findall('[A-Z]{2}|$', line2[i:i+2])[0] == '' and i < (len(line2) - 1)):
-        i = i + 1
-    if i == len(line2) - 1:
-        index = -1
-    else:
-        index = i
-    return index
-
-def check_end_line2(line2):
-    if re.findall('(\d+(M|F)\d+$)|$', line2)[0] == '':
-        index = -1
-    else:
-        index = re.finditer('(\d+(M|F)\d+$)|$', line2)
-    return index
-
 def align_line2(aligned_MRZ, line2):
     i2_beg = check_begining_line2(line2)
     i2_end = check_end_line2(line2)
     if (i2_beg != -1):
         i = 0
-        i2_beg = i2_beg - 13 # si on sort de la chaine ?
+        if i2_beg < 13:
+            i2_beg = 0
+            i = 13 - i2_beg
+        else:
+            i2_beg = i2_beg - 13
         while (i2_beg < len(line2) and i < len(aligned_MRZ)):
             if score2(aligned_MRZ[:i] + line2[i2_beg] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line2[i2_beg] + aligned_MRZ[i + 1:]
@@ -202,8 +210,13 @@ def align_line2(aligned_MRZ, line2):
             i2_beg = i2_beg + 1
     if (i2_end != -1):
         i = len(aligned_MRZ)
-        i2_end = i2_end + 1 #si on sort de la chaine ?
+        i2_end = i2_end + 1
+        if i1_end >= len(line1):
+            i = 36 - (i1_end - len(line1))
+            i1_end = len(line1) - 1
         while (i2_end >= 0 and i >= 0):
+            if ((i == len(aligned_MRZ) - 1) and (score2(aligned_MRZ[:i] + line2[i2_end]) >= score2(aligned_MRZ))): #atenttion premiere somme avec i = len
+                aligned_MRZ = aligned_MRZ[:i] + line2[i2_end]
             if score2(aligned_MRZ[:i] + line2[i2_end] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ): #atenttion premiere somme avec i = len
                 aligned_MRZ = aligned_MRZ[:i] + line2[i2_end] + aligned_MRZ[i + 1:]
             else:
@@ -215,7 +228,7 @@ def align_line2(aligned_MRZ, line2):
 
 def align_lines(aligned_MRZ, line1, line2):
     aligned_MRZ[0] = align_line1(aligned_MRZ[0], line1)
-    aligned_MRZ[1] = align_line1(aligned_MRZ[0], line2)
+    aligned_MRZ[1] = align_line2(aligned_MRZ[0], line2)
     return aligned_MRZ
 
 def check_char(index, X, line, pos, neg):
