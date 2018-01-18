@@ -18,10 +18,16 @@ cv2.imwrite("step0.jpg", image)
 
 if args["step"] != None:
     steps = args["step"]
-    for i in range(len(steps)):
+    i = 0
+    print len(steps)
+    while (i < len(steps)):
+        print "GROS TEST ----------------"
         module = import_list[steps[i]]
+        print steps[i]
         command = __import__(module)
-        command.run()
+        #command.run()
+        i = i + 1
+        print "FIN D IMPORT ----------------------------"
 else:
     import rotation_spacing
     import MRZ_crop
