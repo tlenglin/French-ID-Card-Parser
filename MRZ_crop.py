@@ -60,7 +60,7 @@ def MRZ_crop(th):
             break
 
 
-    roi = finishing_threshold(roi, 125)
+    roi = finishing_threshold(roi, th)
     print "creation of step2.jpg"
     cv2.imwrite("step2.jpg", roi)
 
