@@ -28,7 +28,7 @@ def delete_spaces(line):
     return line
 
 #fixers
-letters = {'0': 'O', '1': 'I', '2': 'Z', '4': 'A', '5': 'S', '6': 'G', '8': 'B' }
+letters = {'0': 'O', '1': 'I', '2': 'Z', '3': 'B', '4': 'A', '5': 'S', '6': 'G', '7': 'T', '8': 'B' }
 numbers = {'B': '8', 'C': '0', 'D': '0', 'G': '6', 'I': '1', 'O': '0', 'Q': '0', 'S': '5', 'Z': '2'}
 
 def line_fixer(line1, line2):
@@ -103,15 +103,17 @@ def check_begining_line2(line2):
     return index
 
 def check_end_line2(line2):
-    if re.findall('(\d+(M|F)\d+$)|$', line2)[0] == '':
+    i = 0
+    while (re.findall('(\d+(M|F)\d+$)|$', line2[i:i+2])[0] == '' and i < (len(line2) - 1)):
+        i = i + 1
+    if i == len(line2) - 1:
         index = -1
     else:
-        index = re.finditer('(\d+(M|F)\d+$)|$', line2)
-        print index
+        index = i
     return index
 
 def score1(line1):
-    print("starting score1")
+    #print("starting score1")
     #print line1
     s = check_char(0, "I", line1, 1, -1)
     s = s + check_char(1, "D", line1, 2, -2)
@@ -128,7 +130,7 @@ def score1(line1):
     return s * 100 / 45
 
 def score2(line2):
-    print("starting score2")
+    #print("starting score2")
     i = 0
     s = 0
     while (i < 36):
@@ -151,78 +153,75 @@ def align_line1(aligned_MRZ, line1):
     if (i1_beg != -1):
         i = 0
         while (i1_beg < len(line1) and i < len(aligned_MRZ)):
-            if score1(aligned_MRZ[:i] + line1[i1_beg] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
+            if (i == 0 and score1(line1[i1_beg] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ)):
+                aligned_MRZ = line1[i1_beg] + aligned_MRZ[i + 1:]
+            elif score1(aligned_MRZ[:i] + line1[i1_beg] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_beg] + aligned_MRZ[i + 1:]
             else:
                 break
             i = i + 1
             i1_beg = i1_beg + 1
+
     if (i1_end != -1):
-        i = len(aligned_MRZ) - 1 # -1  sur ? et i1_end aussi -1 ?
-        i1_end = i1_end + 6 #si on sort de la chaine ?
-        if i1_end >= len(line1):
-            i = 36 - (i1_end - len(line1))
+        if len(line1) - i1_end >= len(aligned_MRZ) - 29:
+            i1_end = i1_end + len(aligned_MRZ) - 29 - 1
+            i = len(aligned_MRZ) - 1
+        elif len(line1) - i1_end < len(aligned_MRZ) - 29:
+            i = 29 + len(line1) - i1_end - 1
             i1_end = len(line1) - 1
-            
-        # print "i = ", i
-        # print "i1_end = ", i1_end
-        # print "line1[end] = ", line1[i1_end]
-        # print "test"
         while (i1_end >= 0 and i >= 0):
-            # print("ON EST DANS LA BOUCLE")
-            # print i
-            # print i1_end
-            # print aligned_MRZ[:i]
-            # print len(line1)
-            # print line1[i1_end]
-            # print len(aligned_MRZ)
-            # print aligned_MRZ[i]
+            print "i = ", i
+            print "i1_end", i1_end
+            print "len(line1) = ", len(line1)
+            print "len(aligned_MRZ) = ", len(aligned_MRZ)
             if ((i == len(aligned_MRZ) - 1) and (score1(aligned_MRZ[:i] + line1[i1_end]) >= score1(aligned_MRZ))): #atenttion premiere somme avec i = len
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_end]
-                #print "on est dans le premier if"
-            elif score1(aligned_MRZ[:i] + line1[i1_end] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
+            elif i != len(aligned_MRZ) and score1(aligned_MRZ[:i] + line1[i1_end] + aligned_MRZ[i + 1:]) >= score1(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line1[i1_end] + aligned_MRZ[i + 1:]
-                #print "on est dans le if"
             else:
-                #print "on est dans le break"
                 break
             i = i - 1
             i1_end = i1_end - 1
-        #print "sortie de while"
+        print aligned_MRZ
     return aligned_MRZ
 
 def align_line2(aligned_MRZ, line2):
     i2_beg = check_begining_line2(line2)
     i2_end = check_end_line2(line2)
     if (i2_beg != -1):
-        i = 0
-        if i2_beg < 13:
-            i2_beg = 0
-            i = 13 - i2_beg
-        else:
+        if i2_beg >= 13:
+            i = 0
             i2_beg = i2_beg - 13
+        elif i2_beg < 13:
+            i = 13 - i2_beg
+            i2_beg = 0
         while (i2_beg < len(line2) and i < len(aligned_MRZ)):
-            if score2(aligned_MRZ[:i] + line2[i2_beg] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ):
+            if (i == 0 and score2(line2[i2_beg] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ)):
+                aligned_MRZ = line2[i2_beg] + aligned_MRZ[i + 1:]
+            elif score2(aligned_MRZ[:i] + line2[i2_beg] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line2[i2_beg] + aligned_MRZ[i + 1:]
             else:
                 break
             i = i + 1
             i2_beg = i2_beg + 1
+
     if (i2_end != -1):
-        i = len(aligned_MRZ)
-        i2_end = i2_end + 1
-        if i1_end >= len(line1):
-            i = 36 - (i1_end - len(line1))
-            i1_end = len(line1) - 1
+        if len(line2) - i2_end >= len(aligned_MRZ) - 34:
+            i2_end = i2_end + len(aligned_MRZ) - 34 - 1
+            i = len(aligned_MRZ) - 1
+        elif len(line2) - i2_end < len(aligned_MRZ) - 34:
+            i = 34 + len(line2) - i2_end - 1
+            i2_end = len(line2) - 1
         while (i2_end >= 0 and i >= 0):
-            if ((i == len(aligned_MRZ) - 1) and (score2(aligned_MRZ[:i] + line2[i2_end]) >= score2(aligned_MRZ))): #atenttion premiere somme avec i = len
+            if ((i == len(aligned_MRZ) - 1) and (score2(aligned_MRZ[:i] + line2[i2_end]) >= score2(aligned_MRZ))):
                 aligned_MRZ = aligned_MRZ[:i] + line2[i2_end]
-            if score2(aligned_MRZ[:i] + line2[i2_end] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ): #atenttion premiere somme avec i = len
+            elif i != len(aligned_MRZ) and score2(aligned_MRZ[:i] + line2[i2_end] + aligned_MRZ[i + 1:]) >= score2(aligned_MRZ):
                 aligned_MRZ = aligned_MRZ[:i] + line2[i2_end] + aligned_MRZ[i + 1:]
             else:
                 break
             i = i - 1
             i2_end = i2_end - 1
+        print aligned_MRZ
     return aligned_MRZ
 
 
